@@ -69,6 +69,7 @@
   <?= $this->form->label(t('Login Button Text'), 'samlauth_login_button') ?>
   <?= $this->form->text('samlauth_login_button', $values, array(''), array('required', 'placeholder="Login with SAML"')) ?>
   <br><br>
+  <button type="submit" class="btn btn-blue"><?= t('Save config') ?></button>
   <?= $this->url->button('fa-certificate', t('Generate Metadata'), 'SamlAuthController', 'metadata', array('plugin'=>'SamlAuth'), false, '', t('SAML SP Metadata')) ?>
 
   <div style="margin:20px 0;"></div>
