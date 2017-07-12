@@ -6,6 +6,10 @@ class SamlSettings {
 
   private $configModel = null;
 
+  public function log($msg) {
+    $this->logToFile('/var/log/php/debug.log', $msg);
+  }
+
   public function __construct($configModel)
   {
       $this->configModel = $configModel;
@@ -14,7 +18,6 @@ class SamlSettings {
 
   public function getSettings() {
 
-
     $sp = array();
     $sp['entityid'] = $this->configModel->get('samlauth_sp_entity_id');
     $sp['signon'] = $this->configModel->get('samlauth_sp_signon');
@@ -22,8 +25,13 @@ class SamlSettings {
     $sp['techname'] = $this->configModel->get('samlauth_techcontact_name');
     $sp['techemail'] = $this->configModel->get('samlauth_techcontact_email');
 
-    $sp['privatecert'] = file_get_contents('/var/kanboard-certs/sp-private.crt');
-    $sp['publiccert'] = file_get_contents('/var/kanboard-certs/sp-public.crt');
+    // Get sp certificate and key either from default path or from user defined path
+    $spCrtPath = empty($this->configModel->get('samlauth_sp_cert')) ? 
+                    '/var/kanboard-certs/sp-public.crt' : $this->configModel->get('samlauth_sp_cert');
+    $spKeyPath = empty($this->configModel->get('samlauth_sp_key')) ? 
+                    '/var/kanboard-certs/sp-private.crt' : $this->configModel->get('samlauth_sp_key');
+    $sp['privatecert'] = file_get_contents($spKeyPath);
+    $sp['publiccert'] = file_get_contents($spCrtPath);
 
     $login = htmlspecialchars($sp['signon'], ENT_XML1);
     $logout = htmlspecialchars($sp['signout'], ENT_XML1);
@@ -33,8 +41,9 @@ class SamlSettings {
     $idp['signon'] = $this->configModel->get('samlauth_idp_signon');
     $idp['signout'] = $this->configModel->get('samlauth_idp_signout');
 
-    $idp['publiccert'] = file_get_contents('/var/kanboard-certs/idp-public.crt');
-
+    // Get either printed cert within settings or default idp cert path
+    $idp['publiccert'] = empty($this->configModel->get('samlauth_idp_cert')) ? 
+                    file_get_contents('/var/kanboard-certs/idp-public.crt') : $this->configModel->get('samlauth_idp_cert');
 
     $settingsInfo = array(
       'debug' => true,
