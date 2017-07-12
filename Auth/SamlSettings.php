@@ -45,6 +45,10 @@ class SamlSettings {
     $idp['publiccert'] = empty($this->configModel->get('samlauth_idp_cert')) ? 
                     file_get_contents('/var/kanboard-certs/idp-public.crt') : $this->configModel->get('samlauth_idp_cert');
 
+    // Define the saml nameID format
+    $samlNameID = empty($this->configModel->get('samlauth_nameid_format')) ?
+                    'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified' : $this->configModel->get('samlauth_nameid_format');
+
     $settingsInfo = array(
       'debug' => true,
       'security' => array(
@@ -72,8 +76,8 @@ class SamlSettings {
               'url' => $logout,
               'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
           ),
-          //'NameIDFormat' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:entity',
-          'NameIDFormat' => 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
+          // Use either preconfigured nameID format or user-setting 
+          'NameIDFormat' => $samlNameID,
           'x509cert' => $sp['publiccert'],
           'privateKey' => $sp['privatecert'],
       ),

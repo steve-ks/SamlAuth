@@ -56,25 +56,33 @@ class SamlAuth extends Base implements AuthenticationProviderInterface, PreAuthe
               $samlResponse = new \OneLogin_Saml2_Response($samlSettings, $_POST['SAMLResponse']);
               if ($samlResponse->isValid()) {
 
-                  // echo 'You are: ' . $samlResponse->getNameId() . '<br>';
-                  // $attributes = $samlResponse->getAttributes();
-                  // if (!empty($attributes)) {
-                  //     echo 'You have the following attributes:<br>';
-                  //     echo '<table><thead><th>Name</th><th>Values</th></thead><tbody>';
-                  //     foreach ($attributes as $attributeName => $attributeValues) {
-                  //         echo '<tr><td>' . htmlentities($attributeName) . '</td><td><ul>';
-                  //         foreach ($attributeValues as $attributeValue) {
-                  //             echo '<li>' . htmlentities($attributeValue) . '</li>';
-                  //         }
-                  //         echo '</ul></td></tr>';
-                  //     }
-                  //     echo '</tbody></table>';
-                  // }
-
-
+                  /**
+                   * DEBUG OUTPUT
+                   * Use this for debugging and checking your saml configuration
+                   */
+                  /*
+                  echo 'You are: ' . $samlResponse->getNameId() . '<br>';
+                  $attributes = $samlResponse->getAttributes();
+                  if (!empty($attributes)) {
+                      echo 'You have the following attributes:<br>';
+                      echo '<table><thead><th>Name</th><th>Values</th></thead><tbody>';
+                      foreach ($attributes as $attributeName => $attributeValues) {
+                         echo '<tr><td>' . htmlentities($attributeName) . '</td><td><ul>';
+                         foreach ($attributeValues as $attributeValue) {
+                             echo '<li>' . htmlentities($attributeValue) . '</li>';
+                         }
+                         echo '</ul></td></tr>';
+                      }
+                      echo '</tbody></table>';
+                  }
+                  echo '<br />Other attributes:<br /><ul>';
+                  echo '<li>Config username: ' . $this->configModel->get('samlauth_username_attribute') . '</li>';
+                  echo '<li>Config mailaddr: ' . $this->configModel->get('samlauth_email_attribute') . '</li>';
+                  echo '</ul><br />';
+                  */
 
                   //Get attributes for SAML from configModel
-                  $atrb_email = $this->configModel->get('samlauth_name_attribute');
+                  $atrb_email = $this->configModel->get('samlauth_email_attribute');
                   $atrb_username = $this->configModel->get('samlauth_username_attribute');
                   $atrb_firstname = $this->configModel->get('samlauth_firstname_attribute');
                   $atrb_lastname = $this->configModel->get('samlauth_lastname_attribute');
