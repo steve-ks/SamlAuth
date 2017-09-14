@@ -65,6 +65,10 @@
   <?= $this->form->text('samlauth_email_attribute', $values, array(), array('placeholder="email"')) ?>
   <p class="form-help"><?= t('Enter the attribute that is returned by your IDP. Default is "email"') ?></p>
 
+  <?= $this->form->label(t('Roles Attribute'), 'samlauth_roles_attribute') ?>
+  <?= $this->form->text('samlauth_roles_attribute', $values, array(), array('placeholder="role"')) ?>
+  <p class="form-help"><?= t('Enter the attribute that is returned by your IDP. Default is "role"') ?></p>
+
   <?= $this->form->label(t('Saml NameID format'), 'samlauth_nameid_format') ?>
   <?= $this->form->text('samlauth_nameid_format', $values, array(), array('placeholder="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"')) ?>
 

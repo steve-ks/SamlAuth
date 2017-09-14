@@ -87,19 +87,20 @@ class SamlAuth extends Base implements AuthenticationProviderInterface, PreAuthe
                   $atrb_firstname = $this->configModel->get('samlauth_firstname_attribute');
                   $atrb_lastname = $this->configModel->get('samlauth_lastname_attribute');
                   $atrb_replacer = $this->configModel->get('samlauth_replace_attribute');
+                  $atrb_roles = $this->configModel->get('samlauth_roles_attribute');
 
                   //Get user information via specified attributes
                   $email =  $samlResponse->getAttributes()["$atrb_email"]['0'];
                   $username = $samlResponse->getAttributes()["$atrb_username"]['0'];
                   $firstname = $samlResponse->getAttributes()["$atrb_firstname"]['0'];
                   $lastname = $samlResponse->getAttributes()["$atrb_lastname"]['0'];
+                  $roles = $samlResponse->getAttributes()["$atrb_roles"];
 
                   //Replace text for a clean username
                   if(!empty($atrb_replacer)) {
                     $username = str_replace($atrb_replacer,"", $username);
                   }
                   //$username = str_replace("companyname\\","", $samlResponse->getNameId());
-
 
                   //Check if firstname & lastname is set
                   if(!empty($firstname)) {
@@ -108,19 +109,35 @@ class SamlAuth extends Base implements AuthenticationProviderInterface, PreAuthe
                       $name .= ' '.$lastname;
                     }
                   //Otherwise check if lastname
-                } elseif (!empty($lastname)){
+                  } elseif (!empty($lastname)){
                     $name = $lastname;
                   //Otherwise pass empty
                   } else {
                     $name = '';
                   }
 
-
                   //Check if username and email are set
                   if (!empty($username) && !empty($email)) {
 
-                      //Create user by having email as username
-                      $this->userInfo = new SamlUserProvider($username, $email, $name, 'app-user');
+                      // Check for roles
+                      $kbrole = 'app-user';
+                      if (!empty($roles)) {
+                          foreach ($roles as $role) {
+                              $role = strtolower($role);
+                              // Check if user is admin or manager
+                              if ($role === 'admin' || $role === 'administrator' || $role === 'app-admin') {
+                                  // User is admin, early break
+                                  $kbrole = 'app-admin';
+                                  break;
+                              } elseif ($role === 'manager' || $role === 'app-manager') {
+                                  // User is manager, continue checking for admin
+                                  $kbrole = 'app-manager';
+                              }
+                          }
+                      }
+
+                      // Create user by having email as username
+                      $this->userInfo = new SamlUserProvider($username, $email, $name, $kbrole);
                       return true;
 
                   } else {
