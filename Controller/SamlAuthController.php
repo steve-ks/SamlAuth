@@ -16,7 +16,11 @@ class SamlAuthController extends BaseController
     {
         $settings = new SamlSettings($this->configModel);
         $authRequest = new \OneLogin_Saml2_Auth($settings->getSettings());
-        $url = $authRequest->login();
+        // Set correct relay state using the redirectAfterLogin session value (in case it is set)
+        $redirect = null;
+        if (isset($this->sessionStorage->redirectAfterLogin) && ! empty($this->sessionStorage->redirectAfterLogin) && ! filter_var($this->sessionStorage->redirectAfterLogin, FILTER_VALIDATE_URL))
+            $redirect = $this->sessionStorage->redirectAfterLogin;
+        $url = $authRequest->login($redirect);
         $this->response->redirect($url);
     }
 

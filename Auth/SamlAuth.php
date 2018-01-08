@@ -138,6 +138,13 @@ class SamlAuth extends Base implements AuthenticationProviderInterface, PreAuthe
 
                       // Create user by having email as username
                       $this->userInfo = new SamlUserProvider($username, $email, $name, $kbrole);
+                      // Check for a redirectAfterLogin value, make sure that the user is redirected to the correct location
+                      // Note that we are not using the relayState here, though it is set by the controller
+                      if (isset($this->sessionStorage->redirectAfterLogin) && ! empty($this->sessionStorage->redirectAfterLogin) && ! filter_var($this->sessionStorage->redirectAfterLogin, FILTER_VALIDATE_URL)) {
+                          $redirect = $this->sessionStorage->redirectAfterLogin;
+                          unset($this->sessionStorage->redirectAfterLogin);
+                          $this->response->redirect($redirect);
+                      }
                       return true;
 
                   } else {
